@@ -10,6 +10,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import axios from "axios";
+import { getServerSession } from "next-auth";
+import { getSession } from "next-auth/react";
+import { headers } from "next/headers";
+import { useEffect } from "react";
 interface insurance {
   id: number;
   fullName: string;
@@ -82,10 +87,52 @@ const insuranceData: insurance[] = [
     paymentMethod: "Credit Card",
   },
 ];
+// const getData=async ()=>{}
 export const Portal = () => {
-  const clickHandler = (data: insurance) => {
-    console.log(data);
+  const clickHandler = async (data: insurance) => {
+    const res = getSession().then((x) => {
+      axios
+        .post(
+          "https://www.googleapis.com/calendar/v3/calendars/calendarId/events?calendarId=primary",
+          {
+            summary: "Doctor's Appointment",
+            description: "Visit Dr. Smith for a regular check-up.",
+            start: {
+              dateTime: "2025-01-15T10:00:00-05:00",
+              timeZone: "America/New_York",
+            },
+            end: {
+              dateTime: "2025-01-15T11:00:00-05:00",
+              timeZone: "America/New_York",
+            },
+            reminders: {
+              useDefault: false,
+              overrides: [
+                {
+                  method: "email",
+                  minutes: 1440,
+                },
+                {
+                  method: "popup",
+                  minutes: 10,
+                },
+              ],
+            },
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${x?.user.googleAccessToken}`,
+            },
+          }
+        )
+        .then((res) => {
+          if (res.status) {
+            alert("added to Calender");
+          }
+        });
+    });
   };
+
   return (
     <div>
       <div className="flex justify-center items-center text-4xl">
