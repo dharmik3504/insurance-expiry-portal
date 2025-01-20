@@ -11,12 +11,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import axios from "axios";
-import { getServerSession } from "next-auth";
+
 import { getSession } from "next-auth/react";
-import { headers } from "next/headers";
-import { useEffect } from "react";
+
+import { useEffect, useState } from "react";
 interface insurance {
-  id: number;
+  _id: string;
   fullName: string;
   insuranceDate: string;
   insurancExpiryDate: string;
@@ -25,70 +25,23 @@ interface insurance {
   customerMobileNo: number;
   paymentMethod: string;
 }
-const insuranceData: insurance[] = [
-  {
-    id: 1,
-    fullName: "John Doe",
-    insuranceDate: "2025-01-01",
-    insurancExpiryDate: "2026-01-01",
-    totalAmount: "500",
-    vehicleMode: "Car",
-    customerMobileNo: 8623883504,
-    paymentMethod: "Credit Card",
-  },
-  {
-    id: 2,
-    fullName: "Jane Smith",
-    insuranceDate: "2024-12-15",
-    insurancExpiryDate: "2025-12-15",
-    totalAmount: "300",
-    vehicleMode: "Motorcycle",
-    customerMobileNo: 8623883504,
-    paymentMethod: "Debit Card",
-  },
-  {
-    id: 3,
-    fullName: "Alice Johnson",
-    insuranceDate: "2024-11-20",
-    insurancExpiryDate: "2025-11-20",
-    totalAmount: "700",
-    vehicleMode: "Truck",
-    customerMobileNo: 8623883504,
-    paymentMethod: "Cash",
-  },
-  {
-    id: 4,
-    fullName: "Bob Brown",
-    insuranceDate: "2024-10-10",
-    insurancExpiryDate: "2025-10-10",
-    totalAmount: "450",
-    customerMobileNo: 8623883504,
-    vehicleMode: "SUV",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    id: 5,
-    fullName: "Emma Davis",
-    insuranceDate: "2024-09-05",
-    insurancExpiryDate: "2025-09-05",
-    totalAmount: "350",
-    customerMobileNo: 8623883504,
-    vehicleMode: "Van",
-    paymentMethod: "UPI",
-  },
-  {
-    id: 6,
-    fullName: "Michael Wilson",
-    insuranceDate: "2025-01-12",
-    insurancExpiryDate: "2026-01-12",
-    totalAmount: "600",
-    vehicleMode: "Car",
-    customerMobileNo: 8623883504,
-    paymentMethod: "Credit Card",
-  },
-];
+
 // const getData=async ()=>{}
 export const Portal = () => {
+  const [users, setUsers] = useState([]);
+  function formatDate(date: Date) {
+    const day = String(date.getDate()).padStart(2, "0"); // Get day and pad with leading zero if necessary
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Get month (0-based) and pad
+    const year = date.getFullYear(); // Get full year
+
+    return `${day}-${month}-${year}`;
+  }
+  useEffect(() => {
+    axios.get("/api/user").then((x) => {
+      setUsers(x.data.insuranceData);
+      console.log(x.data.insuranceData);
+    });
+  }, []);
   const clickHandler = async (data: insurance) => {
     const res = getSession().then((x) => {
       axios
@@ -151,13 +104,21 @@ export const Portal = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {insuranceData.map((invoice: insurance) => (
-            <TableRow key={invoice.id}>
+          {users.map((invoice: insurance) => (
+            <TableRow key={invoice._id}>
               <TableCell className="font-medium">{invoice.fullName}</TableCell>
               <TableCell>{invoice.customerMobileNo}</TableCell>
 
-              <TableCell>{invoice.insuranceDate}</TableCell>
-              <TableCell>{invoice.insurancExpiryDate}</TableCell>
+              <TableCell>
+                {invoice.insuranceDate
+                  ? formatDate(new Date(invoice.insuranceDate))
+                  : ""}
+              </TableCell>
+              <TableCell>
+                {invoice.insurancExpiryDate
+                  ? formatDate(new Date(invoice.insurancExpiryDate))
+                  : ""}
+              </TableCell>
               <TableCell>{invoice.totalAmount}</TableCell>
               <TableCell>{invoice.vehicleMode}</TableCell>
               <TableCell>

@@ -22,11 +22,11 @@ const Form = () => {
 
     const obj = {
       fullName: fullNameValue,
-      mobileNumber: mobileNumberValue,
-      InsuranceDate: InsuranceDateValue,
-      InsuranceExpiryDate: InsuranceExpiryDateValue,
-      Amount: AmountValue,
-      VehicleMode: VehicleModeValue,
+      customerMobileNo: mobileNumberValue,
+      insuranceDate: InsuranceDateValue,
+      insurancExpiryDate: InsuranceExpiryDateValue,
+      totalAmount: AmountValue,
+      vehicleMode: VehicleModeValue,
     };
     await axios.post("/api/user", obj);
     // await UserModel.create({
