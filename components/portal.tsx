@@ -10,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatDate } from "@/lib/utils";
 import axios from "axios";
 
 import { getSession } from "next-auth/react";
@@ -29,49 +30,69 @@ interface insurance {
 // const getData=async ()=>{}
 export const Portal = () => {
   const [users, setUsers] = useState([]);
-  function formatDate(date: Date) {
-    const day = String(date.getDate()).padStart(2, "0"); // Get day and pad with leading zero if necessary
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Get month (0-based) and pad
-    const year = date.getFullYear(); // Get full year
+  const convertDateTime = (
+    date: string,
+    hours: number = 0,
+    min: number = 0,
+    eventRemainderBeforeDay: number = 7
+  ) => {
+    let date1 = new Date(date);
 
-    return `${day}-${month}-${year}`;
-  }
+    date1.setDate(date1.getDate() - eventRemainderBeforeDay);
+
+    date1.setHours(date1.getHours() + hours); // Adds 2 hours
+    date1.setMinutes(date1.getMinutes() + min); // Adds 30 minutes
+
+    // Convert to ISO string
+    let updatedDate = date1.toISOString();
+    return updatedDate;
+  };
   useEffect(() => {
     axios.get("/api/user").then((x) => {
       setUsers(x.data.insuranceData);
-      console.log(x.data.insuranceData);
     });
   }, []);
   const clickHandler = async (data: insurance) => {
+    const {
+      fullName,
+      insuranceDate,
+      insurancExpiryDate,
+      totalAmount,
+      vehicleMode,
+      customerMobileNo,
+    } = data;
+    const obj = {
+      summary: `${vehicleMode} Insurance Expiry for ${fullName}`,
+      description: `Your ${vehicleMode} insurance for the Sedan (Policy No: 12345) is due for renewal on ${formatDate(
+        new Date(insurancExpiryDate)
+      )}. The total renewal amount is 500 Please contact to Pratik Thakkar for  renew your insurance before the expiry date to avoid any penalties. For further assistance, contact support.Pratik Thakkar - 8623883504`,
+      start: {
+        dateTime: convertDateTime(insurancExpiryDate, 8, 30.7), //"2025-01-15T10:00:00-05:00",
+        timeZone: "Asia/Kolkata",
+      },
+      end: {
+        dateTime: convertDateTime(insurancExpiryDate, 9, 30, 7),
+        timeZone: "Asia/Kolkata",
+      },
+      reminders: {
+        useDefault: false,
+        overrides: [
+          {
+            method: "email",
+            minutes: 1440,
+          },
+          {
+            method: "popup",
+            minutes: 10,
+          },
+        ],
+      },
+    };
     const res = getSession().then((x) => {
       axios
         .post(
           "https://www.googleapis.com/calendar/v3/calendars/calendarId/events?calendarId=primary",
-          {
-            summary: "Doctor's Appointment",
-            description: "Visit Dr. Smith for a regular check-up.",
-            start: {
-              dateTime: "2025-01-15T10:00:00-05:00",
-              timeZone: "America/New_York",
-            },
-            end: {
-              dateTime: "2025-01-15T11:00:00-05:00",
-              timeZone: "America/New_York",
-            },
-            reminders: {
-              useDefault: false,
-              overrides: [
-                {
-                  method: "email",
-                  minutes: 1440,
-                },
-                {
-                  method: "popup",
-                  minutes: 10,
-                },
-              ],
-            },
-          },
+          obj,
           {
             headers: {
               Authorization: `Bearer ${x?.user.googleAccessToken}`,
@@ -79,7 +100,7 @@ export const Portal = () => {
           }
         )
         .then((res) => {
-          if (res.status) {
+          if (res.status == 200) {
             alert("added to Calender");
           }
         });

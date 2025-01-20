@@ -13,7 +13,7 @@ export async function GET(req: NextApiRequest, res: NextApiResponse) {
 
 export async function POST(req: NextRequest, res: NextResponse) {
   const body = await req.json();
-  console.log(body);
+
   if (req.method == "POST") {
     await dbConnect();
     await UserModel.create(body);
