@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { formatDate } from "@/lib/utils";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 import { getSession } from "next-auth/react";
 
@@ -28,8 +29,10 @@ interface insurance {
 }
 
 // const getData=async ()=>{}
-export const Portal = () => {
+export const Portal = ({ insuranceData }: { insuranceData: insurance[] }) => {
+  const router = useRouter();
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
   const convertDateTime = (
     date: string,
     hours: number = 0,
@@ -47,11 +50,10 @@ export const Portal = () => {
     let updatedDate = date1.toISOString();
     return updatedDate;
   };
-  useEffect(() => {
-    axios.get("/api/user").then((x) => {
-      setUsers(x.data.insuranceData);
-    });
-  }, []);
+
+  const hanldeAddClick = () => {
+    router.push("/add");
+  };
   const clickHandler = async (data: insurance) => {
     const {
       fullName,
@@ -112,6 +114,11 @@ export const Portal = () => {
       <div className="flex justify-center items-center text-4xl">
         Insurance Expiry Portal
       </div>
+      <div className="flex justify-end items-end m-2">
+        <Button variant={"destructive"} onClick={hanldeAddClick}>
+          Add User
+        </Button>
+      </div>
       <Table className="mt-4">
         <TableHeader>
           <TableRow>
@@ -125,28 +132,33 @@ export const Portal = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {users.map((invoice: insurance) => (
-            <TableRow key={invoice._id}>
-              <TableCell className="font-medium">{invoice.fullName}</TableCell>
-              <TableCell>{invoice.customerMobileNo}</TableCell>
+          {insuranceData &&
+            insuranceData.map((invoice: insurance) => (
+              <TableRow key={invoice._id}>
+                <TableCell className="font-medium">
+                  {invoice.fullName}
+                </TableCell>
+                <TableCell>{invoice.customerMobileNo}</TableCell>
 
-              <TableCell>
-                {invoice.insuranceDate
-                  ? formatDate(new Date(invoice.insuranceDate))
-                  : ""}
-              </TableCell>
-              <TableCell>
-                {invoice.insurancExpiryDate
-                  ? formatDate(new Date(invoice.insurancExpiryDate))
-                  : ""}
-              </TableCell>
-              <TableCell>{invoice.totalAmount}</TableCell>
-              <TableCell>{invoice.vehicleMode}</TableCell>
-              <TableCell>
-                <Button onClick={() => clickHandler(invoice)}>Add Event</Button>
-              </TableCell>
-            </TableRow>
-          ))}
+                <TableCell>
+                  {invoice.insuranceDate
+                    ? formatDate(new Date(invoice.insuranceDate))
+                    : ""}
+                </TableCell>
+                <TableCell>
+                  {invoice.insurancExpiryDate
+                    ? formatDate(new Date(invoice.insurancExpiryDate))
+                    : ""}
+                </TableCell>
+                <TableCell>{invoice.totalAmount}</TableCell>
+                <TableCell>{invoice.vehicleMode}</TableCell>
+                <TableCell>
+                  <Button onClick={() => clickHandler(invoice)}>
+                    Add Event
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
         </TableBody>
       </Table>
     </div>
