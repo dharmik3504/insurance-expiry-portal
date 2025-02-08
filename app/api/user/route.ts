@@ -1,10 +1,10 @@
 import dbConnect from "@/db/db";
 import UserModel from "@/model/user";
-import { NextApiRequest, NextApiResponse } from "next";
+
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
+export async function GET(req: NextRequest, res: NextResponse) {
   await dbConnect();
   const insuranceData = await UserModel.find({});
 
@@ -25,4 +25,12 @@ export async function POST(req: NextRequest, res: NextResponse) {
       message: "yo yo",
     });
   }
+  // if (req.method == "PUT") {
+  //   await dbConnect();
+  //   await UserModel.updateOne({
+  //     filter: {
+  //       id: req.Calenderid,
+  //     },
+  //   });
+  // }
 }

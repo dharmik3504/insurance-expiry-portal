@@ -10,11 +10,12 @@ export default async function Home() {
   const { insuranceData } = customer.data;
   const session = await getServerSession();
 
-  if (!session) {
+  if (!session?.user?.name) {
     redirect("/api/auth/signin");
   }
   return (
     <div>
+      <div>{JSON.stringify(session)}</div>
       <Portal insuranceData={insuranceData} />{" "}
     </div>
   );

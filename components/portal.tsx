@@ -20,12 +20,12 @@ import { useEffect, useState } from "react";
 interface insurance {
   _id: string;
   fullName: string;
-  insuranceDate: string;
-  insurancExpiryDate: string;
-  totalAmount: string;
+  customerMobileNo: string;
   vehicleMode: string;
-  customerMobileNo: number;
-  paymentMethod: string;
+  registrationDate: string;
+  fitnessValidUpto: string;
+  insurancValidUpto: string;
+  PUCCValidUpto: string;
 }
 
 // const getData=async ()=>{}
@@ -33,80 +33,12 @@ export const Portal = ({ insuranceData }: { insuranceData: insurance[] }) => {
   const router = useRouter();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const convertDateTime = (
-    date: string,
-    hours: number = 0,
-    min: number = 0,
-    eventRemainderBeforeDay: number = 7
-  ) => {
-    let date1 = new Date(date);
-
-    date1.setDate(date1.getDate() - eventRemainderBeforeDay);
-
-    date1.setHours(date1.getHours() + hours); // Adds 2 hours
-    date1.setMinutes(date1.getMinutes() + min); // Adds 30 minutes
-
-    // Convert to ISO string
-    let updatedDate = date1.toISOString();
-    return updatedDate;
-  };
 
   const hanldeAddClick = () => {
     router.push("/add");
   };
   const clickHandler = async (data: insurance) => {
-    const {
-      fullName,
-      insuranceDate,
-      insurancExpiryDate,
-      totalAmount,
-      vehicleMode,
-      customerMobileNo,
-    } = data;
-    const obj = {
-      summary: `${vehicleMode} Insurance Expiry for ${fullName}`,
-      description: `Your ${vehicleMode} insurance for the Sedan (Policy No: 12345) is due for renewal on ${formatDate(
-        new Date(insurancExpiryDate)
-      )}. The total renewal amount is 500 Please contact to Pratik Thakkar for  renew your insurance before the expiry date to avoid any penalties. For further assistance, contact support.Pratik Thakkar - 8623883504`,
-      start: {
-        dateTime: convertDateTime(insurancExpiryDate, 8, 30.7), //"2025-01-15T10:00:00-05:00",
-        timeZone: "Asia/Kolkata",
-      },
-      end: {
-        dateTime: convertDateTime(insurancExpiryDate, 9, 30, 7),
-        timeZone: "Asia/Kolkata",
-      },
-      reminders: {
-        useDefault: false,
-        overrides: [
-          {
-            method: "email",
-            minutes: 1440,
-          },
-          {
-            method: "popup",
-            minutes: 10,
-          },
-        ],
-      },
-    };
-    const res = getSession().then((x) => {
-      axios
-        .post(
-          "https://www.googleapis.com/calendar/v3/calendars/calendarId/events?calendarId=primary",
-          obj,
-          {
-            headers: {
-              Authorization: `Bearer ${x?.user.googleAccessToken}`,
-            },
-          }
-        )
-        .then((res) => {
-          if (res.status == 200) {
-            alert("added to Calender");
-          }
-        });
-    });
+    const result = await axios.post("/api/calendar", data);
   };
 
   return (
@@ -125,10 +57,12 @@ export const Portal = ({ insuranceData }: { insuranceData: insurance[] }) => {
             <TableHead className="">Full Name</TableHead>
             <TableHead>Mobile Number</TableHead>
 
-            <TableHead>Insurance Date</TableHead>
-            <TableHead>Expiry Date</TableHead>
-            <TableHead>Amount</TableHead>
+            <TableHead>Registration Date</TableHead>
+            <TableHead>Insurance Valid Upto</TableHead>
+            <TableHead>Fitness Valid Upto</TableHead>
+            <TableHead>PUCC Valid Upto</TableHead>
             <TableHead>Vehicle Mode</TableHead>
+            <TableHead></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -141,17 +75,27 @@ export const Portal = ({ insuranceData }: { insuranceData: insurance[] }) => {
                 <TableCell>{invoice.customerMobileNo}</TableCell>
 
                 <TableCell>
-                  {invoice.insuranceDate
-                    ? formatDate(new Date(invoice.insuranceDate))
+                  {invoice.registrationDate
+                    ? formatDate(new Date(invoice.registrationDate))
                     : ""}
                 </TableCell>
                 <TableCell>
-                  {invoice.insurancExpiryDate
-                    ? formatDate(new Date(invoice.insurancExpiryDate))
+                  {invoice.insurancValidUpto
+                    ? formatDate(new Date(invoice.insurancValidUpto))
                     : ""}
                 </TableCell>
-                <TableCell>{invoice.totalAmount}</TableCell>
+                <TableCell>
+                  {invoice.fitnessValidUpto
+                    ? formatDate(new Date(invoice.fitnessValidUpto))
+                    : ""}
+                </TableCell>
+                <TableCell>
+                  {invoice.PUCCValidUpto
+                    ? formatDate(new Date(invoice.PUCCValidUpto))
+                    : ""}
+                </TableCell>
                 <TableCell>{invoice.vehicleMode}</TableCell>
+
                 <TableCell>
                   <Button onClick={() => clickHandler(invoice)}>
                     Add Event
