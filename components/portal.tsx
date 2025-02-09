@@ -38,7 +38,9 @@ export const Portal = ({ insuranceData }: { insuranceData: insurance[] }) => {
     router.push("/add");
   };
   const clickHandler = async (data: insurance) => {
-    const result = await axios.post("/api/calendar", data);
+    try {
+      const result = await axios.post("/api/calendar", data);
+    } catch (e) {}
   };
 
   return (

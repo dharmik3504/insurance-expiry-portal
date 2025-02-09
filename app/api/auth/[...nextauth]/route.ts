@@ -1,3 +1,5 @@
+import dbConnect from "@/db/db";
+import { UserModel } from "@/model/user";
 import NextAuth, {
   Account,
   DefaultSession,
@@ -35,17 +37,42 @@ export const authOptions: NextAuthOptions = {
         return false;
       }
       if (account.provider === "google") {
-        return profile.email_verified && profile.email.endsWith("@gmail.com");
+        const { name, email, picture } = profile;
+        await dbConnect();
+        const user = await UserModel.find({
+          email,
+        });
+        console.log(user);
+        if (user.length == 0) {
+          await UserModel.create({
+            Name: name,
+            email,
+            photo: picture,
+          });
+        }
+
+        return true; // Do different verification for other providers that don't have `email_verified`
       }
-      return true; // Do different verification for other providers that don't have `email_verified`
+      return false;
     },
     async session({ session, token }) {
       session.user.googleAccessToken = token.googleAccessToken;
+      session.user.uid = token.uid;
       return session;
     },
     async jwt({ token, account, profile, user }) {
-      if (account) {
+      if (account && user) {
+        const { email } = user;
+
+        await dbConnect();
+
+        const userRes = await UserModel.findOne({
+          email,
+        });
+        console.log(userRes);
         token.googleAccessToken = account.access_token;
+        token.uid = userRes._id;
+        // token.uid = user;
       }
 
       return token;

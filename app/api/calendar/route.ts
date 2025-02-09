@@ -70,26 +70,28 @@ export async function POST(req: NextRequest, res: NextResponse) {
     },
   };
   if (session && session.user?.googleAccessToken) {
-    const addEvent = await axios.post(
-      "https://www.googleapis.com/calendar/v3/calendars/calendarId/events?calendarId=primary",
-      obj,
-      {
-        headers: {
-          Authorization: `Bearer ${session.user?.googleAccessToken}`,
-        },
-      }
-    );
-
-    if (addEvent.status == 200) {
+    try {
+      const addEvent = await axios.post(
+        "https://www.googleapis.com/calendar/v3/calendars/calendarId/events?calendarId=primary",
+        obj,
+        {
+          headers: {
+            Authorization: `Bearer ${session.user?.googleAccessToken}`,
+          },
+        }
+      );
       const { htmlLink, id } = addEvent.data;
       return NextResponse.json({
         htmlLink,
         id,
       });
-    } else {
-      return NextResponse.json({
-        error: addEvent,
-      });
+    } catch (e) {
+      return NextResponse.json(
+        {
+          error: e.message,
+        },
+        { status: 401 }
+      );
     }
   }
 }

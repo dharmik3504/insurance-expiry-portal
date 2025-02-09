@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import dbConnect from "@/db/db";
-import UserModel from "@/model/user";
+import ContentModel from "@/model/user";
 import axios from "axios";
 import { useRef } from "react";
 import { Input } from "./ui/input";
