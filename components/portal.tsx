@@ -14,7 +14,7 @@ import { formatDate } from "@/lib/utils";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 
 import { useEffect, useState } from "react";
 interface insurance {
@@ -29,11 +29,19 @@ interface insurance {
 }
 
 // const getData=async ()=>{}
-export const Portal = ({ insuranceData }: { insuranceData: insurance[] }) => {
+export const Portal = (session: any) => {
   const router = useRouter();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [insuranceData, setInsuranceData] = useState([]);
 
+  useEffect(() => {
+    const customer = axios
+      .get(`/api/user?uid=${session.session.user.uid}`)
+      .then((data) => {
+        setInsuranceData(data.data.insuranceData);
+      });
+  }, []);
   const hanldeAddClick = () => {
     router.push("/add");
   };

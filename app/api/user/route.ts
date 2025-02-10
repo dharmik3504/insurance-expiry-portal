@@ -5,9 +5,15 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../auth/[...nextauth]/route.ts";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const uid = searchParams.get("uid");
+  console.log(uid);
+
   await dbConnect();
-  const insuranceData = await ContentModel.find({});
+  const insuranceData = await ContentModel.find({
+    userId: uid,
+  });
 
   return NextResponse.json({
     insuranceData,
