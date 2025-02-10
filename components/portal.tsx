@@ -26,6 +26,7 @@ interface insurance {
   fitnessValidUpto: string;
   insurancValidUpto: string;
   PUCCValidUpto: string;
+  calendarHtmlLink: string;
 }
 
 // const getData=async ()=>{}
@@ -107,9 +108,29 @@ export const Portal = (session: any) => {
                 <TableCell>{invoice.vehicleMode}</TableCell>
 
                 <TableCell>
-                  <Button onClick={() => clickHandler(invoice)}>
-                    Add Event
+                  <Button
+                    onClick={() => {
+                      console.log("coming soon..");
+                    }}
+                  >
+                    Edit
                   </Button>
+                </TableCell>
+
+                <TableCell>
+                  {invoice.calendarHtmlLink ? (
+                    <Button
+                      onClick={() => {
+                        router.push(invoice.calendarHtmlLink);
+                      }}
+                    >
+                      View
+                    </Button>
+                  ) : (
+                    <Button onClick={() => clickHandler(invoice)}>
+                      Add Event
+                    </Button>
+                  )}
                 </TableCell>
               </TableRow>
             ))}

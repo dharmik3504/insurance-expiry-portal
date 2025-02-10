@@ -11,3 +11,8 @@ export function formatDate(date: Date) {
 
   return `${day}-${month}-${year}`;
 }
+export function debugData(logName: string, data: any) {
+  console.log(`---------start ${logName}----------------------`);
+  console.log(data);
+  console.log(`-----------end ${logName}--------------------`);
+}

@@ -5,8 +5,8 @@ import { authOptions } from "../auth/[...nextauth]/route";
 import axios from "axios";
 
 export async function POST(req: NextRequest, res: NextResponse) {
-  console.log("-----");
-  const body = await req.json();
+  let body = await req.json();
+
   const convertDateTime = (
     date: string,
     hours: number = 0,
@@ -41,7 +41,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
     description
   )}`;
   const session = await getServerSession(authOptions);
-  console.log(session);
 
   const obj = {
     summary: `${vehicleMode} Insurance Expiry for ${fullName}`,
@@ -81,6 +80,17 @@ export async function POST(req: NextRequest, res: NextResponse) {
         }
       );
       const { htmlLink, id } = addEvent.data;
+      const updatedBody = {
+        ...body,
+        calendarId: id,
+        calendarHtmlLink: htmlLink,
+      };
+
+      const res1 = await fetch("http://localhost:3000/api/user", {
+        method: "put",
+        body: JSON.stringify(updatedBody),
+      });
+
       return NextResponse.json({
         htmlLink,
         id,

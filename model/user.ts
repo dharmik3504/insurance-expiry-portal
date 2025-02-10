@@ -14,6 +14,8 @@ const ContentSchema = new Schema({
   insurancValidUpto: { type: Date, require: true },
   PUCCValidUpto: { type: Date, require: true },
   userId: { type: Types.ObjectId, ref: "User", require: true },
+  calendarId: { type: String, require: true },
+  calendarHtmlLink: { type: String, require: true },
 });
 
 // UserModel

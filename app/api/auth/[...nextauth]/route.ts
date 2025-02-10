@@ -26,6 +26,8 @@ export const authOptions: NextAuthOptions = {
         params: {
           scope:
             "openid email profile https://www.googleapis.com/auth/calendar.events",
+          access_type: "offline", // Ensures refresh token is provided
+          prompt: "consent", // Forces user to approve permissions every time
         },
       },
     }),
@@ -42,7 +44,7 @@ export const authOptions: NextAuthOptions = {
         const user = await UserModel.find({
           email,
         });
-        console.log(user);
+
         if (user.length == 0) {
           await UserModel.create({
             Name: name,
@@ -69,7 +71,7 @@ export const authOptions: NextAuthOptions = {
         const userRes = await UserModel.findOne({
           email,
         });
-        console.log(userRes);
+
         token.googleAccessToken = account.access_token;
         token.uid = userRes._id;
         // token.uid = user;
