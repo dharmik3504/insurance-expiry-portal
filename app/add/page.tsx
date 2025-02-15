@@ -1,5 +1,4 @@
 import Form from "@/components/form";
-import dbConnect from "@/db/db";
 
 const Add = async () => {
   return (

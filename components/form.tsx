@@ -1,7 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import dbConnect from "@/db/db";
-import ContentModel from "@/model/user";
+
 import axios from "axios";
 import { useRef } from "react";
 import { Input } from "./ui/input";
@@ -12,18 +11,31 @@ const Form = () => {
   const mobileNumberRef = useRef(null);
   const RegistrationDateRef = useRef(null);
   const InsurancValidUptoRef = useRef(null);
-  const AmountRef = useRef(null);
+  // const AmountRef = useRef(null);
   const VehicleModeRef = useRef(null);
   const FitnessValidUptoRef = useRef(null);
   const PUCCValidUptoRef = useRef(null);
 
   const handleClick = async () => {
+    //@ts-expect-error  des
     const fullNameValue = fullNameRef?.current.value;
+    //@ts-expect-error  des
+
     const mobileNumberValue = mobileNumberRef?.current.value;
+    //@ts-expect-error  des
+
     const RegistrationDateValue = RegistrationDateRef?.current.value;
+    //@ts-expect-error  des
+
     const InsurancValidUptoValue = InsurancValidUptoRef?.current.value;
+    //@ts-expect-error  des
+
     const FitnessValidUptoValue = FitnessValidUptoRef?.current.value;
+    //@ts-expect-error  des
+
     const PUCCValidUptValue = PUCCValidUptoRef?.current.value;
+    //@ts-expect-error  des
+
     const VehicleModeValue = VehicleModeRef?.current.value;
 
     const obj = {

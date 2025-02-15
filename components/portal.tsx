@@ -3,18 +3,15 @@ import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { formatDate } from "@/lib/utils";
 import axios from "axios";
+import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
-
-import { getSession, useSession } from "next-auth/react";
 
 import { useEffect, useState } from "react";
 interface insurance {
@@ -30,26 +27,30 @@ interface insurance {
 }
 
 // const getData=async ()=>{}
+
 export const Portal = (session: any) => {
   const router = useRouter();
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
+
   const [insuranceData, setInsuranceData] = useState([]);
 
   useEffect(() => {
-    const customer = axios
-      .get(`/api/user?uid=${session.session.user.uid}`)
-      .then((data) => {
+    //@ts-ignore
+    if (session.user) {
+      axios.get(`/api/user?uid=${session?.user?.uid}`).then((data) => {
         setInsuranceData(data.data.insuranceData);
       });
-  }, []);
+    }
+  }, [session.user]);
   const hanldeAddClick = () => {
     router.push("/add");
   };
   const clickHandler = async (data: insurance) => {
     try {
-      const result = await axios.post("/api/calendar", data);
-    } catch (e) {}
+      await axios.post("/api/calendar", data);
+    } catch (e) {
+      //@ts-expect-error des
+      console.log(e.message);
+    }
   };
 
   return (
