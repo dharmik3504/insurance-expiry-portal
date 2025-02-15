@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table";
 import { formatDate } from "@/lib/utils";
 import axios from "axios";
-import { Session } from "next-auth";
+
 import { useRouter } from "next/navigation";
 
 import { useEffect, useState } from "react";
@@ -27,20 +27,19 @@ interface insurance {
 }
 
 // const getData=async ()=>{}
-
-export const Portal = (session: any) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const Portal = (clientSession1: any) => {
   const router = useRouter();
 
   const [insuranceData, setInsuranceData] = useState([]);
 
   useEffect(() => {
-    //@ts-ignore
-    if (session.user) {
-      axios.get(`/api/user?uid=${session?.user?.uid}`).then((data) => {
+    if (clientSession1 && clientSession1.user) {
+      axios.get(`/api/user?uid=${clientSession1?.user?.uid}`).then((data) => {
         setInsuranceData(data.data.insuranceData);
       });
     }
-  }, [session.user]);
+  }, [clientSession1]);
   const hanldeAddClick = () => {
     router.push("/add");
   };

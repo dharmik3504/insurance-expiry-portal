@@ -12,7 +12,7 @@ export default async function Home() {
 
   return (
     <div>
-      <Portal session={session} />
+      <Portal clientSession1={session} />
     </div>
   );
 }
