@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
         calendarHtmlLink: htmlLink,
       };
 
-      await fetch("http://localhost:3000/api/user", {
+      await fetch(`${process.env.BASE_URL}/api/user`, {
         method: "put",
         body: JSON.stringify(updatedBody),
       });
