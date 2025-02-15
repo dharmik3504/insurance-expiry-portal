@@ -28,12 +28,13 @@ interface insurance {
 
 // const getData=async ()=>{}
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const Portal = (clientSession1: any) => {
+export const Portal = ({ clientSession1 }: any) => {
   const router = useRouter();
 
   const [insuranceData, setInsuranceData] = useState([]);
 
   useEffect(() => {
+    console.log(clientSession1);
     if (clientSession1 && clientSession1.user) {
       axios.get(`/api/user?uid=${clientSession1?.user?.uid}`).then((data) => {
         setInsuranceData(data.data.insuranceData);
