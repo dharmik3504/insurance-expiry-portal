@@ -8,7 +8,7 @@ import authOptions from "@/lib/auth";
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const uid = searchParams.get("uid");
-
+  console.log("searchParams " + uid);
   await dbConnect();
   const insuranceData = await ContentModel.find({
     userId: uid,

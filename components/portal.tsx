@@ -24,6 +24,7 @@ interface insurance {
   insurancValidUpto: string;
   PUCCValidUpto: string;
   calendarHtmlLink: string;
+  userId: string;
 }
 
 // const getData=async ()=>{}
@@ -34,22 +35,29 @@ export const Portal = ({ clientSession1 }: any) => {
   const [insuranceData, setInsuranceData] = useState([]);
 
   useEffect(() => {
-    console.log(clientSession1);
     if (clientSession1 && clientSession1.user) {
       axios.get(`/api/user?uid=${clientSession1?.user?.uid}`).then((data) => {
         setInsuranceData(data.data.insuranceData);
       });
     }
   }, [clientSession1]);
+
   const hanldeAddClick = () => {
     router.push("/add");
   };
+  const handleEdit = (uid: string) => {
+    router.push(`/EditUser/${uid}`);
+  };
   const clickHandler = async (data: insurance) => {
     try {
-      await axios.post("/api/calendar", data);
+      const res = await axios.post("/api/calendar", data);
+      if (res.status == 200) {
+        axios.get(`/api/user?uid=${clientSession1?.user?.uid}`).then((data) => {
+          setInsuranceData(data.data.insuranceData);
+        });
+      }
     } catch (e) {
       //@ts-expect-error des
-      console.log(e.message);
     }
   };
 
@@ -58,6 +66,7 @@ export const Portal = ({ clientSession1 }: any) => {
       <div className="flex justify-center items-center text-4xl">
         Insurance Expiry Portal
       </div>
+      <div>{JSON.stringify(clientSession1)}</div>
       <div className="flex justify-end items-end m-2">
         <Button variant={"destructive"} onClick={hanldeAddClick}>
           Add User
@@ -111,7 +120,7 @@ export const Portal = ({ clientSession1 }: any) => {
                 <TableCell>
                   <Button
                     onClick={() => {
-                      console.log("coming soon..");
+                      handleEdit(invoice._id);
                     }}
                   >
                     Edit

@@ -35,7 +35,10 @@ export async function POST(req: NextRequest) {
   const description = `Your ${vehicleMode} insurance for the Sedan (Policy No: 12345) is due for renewal on ${formatDate(
     new Date(insurancValidUpto)
   )}. The total renewal amount is 500 Please contact to Pratik Thakkar for  renew your insurance before the expiry date to avoid any penalties. For further assistance, contact support.Pratik Thakkar - 8623883504`;
-  const sendMessage = `https://api.whatsapp.com/send?phone=8623883504&text=${encodeURIComponent(
+  const sendWhatappMessage = `https://api.whatsapp.com/send?phone=8623883504&text=${encodeURIComponent(
+    description
+  )}`;
+  const sendSimpleSMS = `sms:8623883504?body=${encodeURIComponent(
     description
   )}`;
   const session = await getServerSession(authOptions);
@@ -43,7 +46,9 @@ export async function POST(req: NextRequest) {
   const obj = {
     summary: `${vehicleMode} Insurance Expiry for ${fullName}`,
     description: `${description} \n 
-        <a href="${sendMessage}" style="display:inline-block; padding:10px 15px; background-color:#007BFF; color:white; text-decoration:none; border-radius:5px;">Send WhatsApp Message</a>`,
+        <a href="${sendWhatappMessage}" style="display:inline-block; padding:10px 15px; background-color:#007BFF; color:white; text-decoration:none; border-radius:5px;">Send WhatsApp Message</a> \n 
+        <a href="${sendSimpleSMS}" style="display:inline-block; padding:10px 15px; background-color:#007BFF; color:white; text-decoration:none; border-radius:5px;">Send Simple SMS</a>
+        `,
     start: {
       dateTime: convertDateTime(insurancValidUpto, 8, 30.7), //"2025-01-15T10:00:00-05:00",
       timeZone: "Asia/Kolkata",
@@ -67,7 +72,7 @@ export async function POST(req: NextRequest) {
     },
   };
   //@ts-expect-error  des  des
-  if (session && session.user?.googleAccessToken) {
+  if (session && session.accessToken) {
     try {
       const addEvent = await axios.post(
         "https://www.googleapis.com/calendar/v3/calendars/calendarId/events?calendarId=primary",
@@ -75,7 +80,7 @@ export async function POST(req: NextRequest) {
         {
           headers: {
             //@ts-expect-error  des
-            Authorization: `Bearer ${session.user?.googleAccessToken}`,
+            Authorization: `Bearer ${session.accessToken}`,
           },
         }
       );
